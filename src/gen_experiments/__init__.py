@@ -217,7 +217,6 @@ diff_params = {
     "autoks": ND({"diffcls": "sindy", "kind": "kalman", "alpha": "gcv"}),
     "test_axis": ND({"diffcls": "FiniteDifference", "axis": -2}),
     "test2": ND({"diffcls": "SmoothedFiniteDifference"}),
-    "test2_axis": ND({"diffcls": "SmoothedFiniteDifference", "axis": -2}),
     "tv": ND({"diffcls": "sindy", "kind": "trend_filtered", "order": 0, "alpha": 1}),
     "savgol": ND({"diffcls": "sindy", "kind": "savitzky_golay"}),
     "sfd-nox": ND({"diffcls": "SmoothedFiniteDifference", "save_smooth": False}),
@@ -233,38 +232,14 @@ feat_params = {
     "test2": ND({"featcls": "Fourier"}),
     "cubic": ND({"featcls": "Polynomial", "degree": 3}),
     "testweak": ND({"featcls": "WeakPDELibrary"}),  # needs work
-    "pde2": ParamDetails(
+    "pde": ParamDetails(
         ND({
             "featcls": "pde",
-            "library_functions": [identity, quadratic],
-            "function_names": [identity, addn],
+            "library_functions": [lambda x: x, lambda x: x * x],
+            "function_names": [lambda x: x, lambda x: x + x],
             "derivative_order": 2,
             "spatial_grid": np.arange(0, 10, 0.1),
             "include_interaction": True
-        }),[ps]
-    ),
-    "pde3": ParamDetails(
-        ND({
-            "featcls": "pde",
-            "library_functions": [identity, quadratic],
-            "function_names": [identity, addn],
-            "derivative_order": 3,
-            "spatial_grid": np.arange(0, 10, 0.1),
-            "include_interaction": True,
-            "is_uniform": True,
-        }),[ps]
-    ),
-    "pde4": ParamDetails(
-        ND({
-            "featcls": "pde",
-            "library_functions": [identity, quadratic],
-            "function_names": [identity, addn],
-            "derivative_order": 4,
-            "spatial_grid": np.arange(0, 10, 0.1),
-            "include_interaction": True,
-            "is_uniform": True,
-            "periodic": True,
-            "include_bias": True,
         }),[ps]
     )
 }

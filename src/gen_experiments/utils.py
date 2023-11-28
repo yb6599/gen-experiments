@@ -542,7 +542,7 @@ def plot_training_data(
     ax.set(ylabel="Magnitude")
     return fig
 
-def plot_pde_training_data(last_train, last_train_true, smoothed_last_train = None):
+def plot_pde_training_data(last_train, last_train_true, smoothed_last_train):
     """Plot training data (and smoothed training data, if different)."""
     #1D:
     if len(last_train.shape)==3:
@@ -552,10 +552,9 @@ def plot_pde_training_data(last_train, last_train_true, smoothed_last_train = No
         axs[1].imshow(last_train_true - last_train, vmin=0, 
                     vmax=last_train_true.max())
         axs[1].set(title="Noise")
-        if smoothed_last_train is not None:
-            axs[2].imshow(last_train_true - smoothed_last_train, vmin=0, 
-                        vmax=last_train_true.max())
-            axs[2].set(title="Smoothed Data")
+        axs[2].imshow(last_train_true - smoothed_last_train, vmin=0, 
+                    vmax=last_train_true.max())
+        axs[2].set(title="Smoothed Data")
         return plt.show()
 
 def plot_test_trajectories(

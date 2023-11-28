@@ -25,7 +25,7 @@ def burgers1D(t, u, dx, nx):
     u[-1] = 0
     uxx = SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
     ux = SpectralDerivative(d=1, axis=0)._differentiate(u, dx)
-    return np.reshape(0.1*uxx - u*ux, nx)
+    return np.reshape((uxx - u*ux), nx)
 
 def ks(t, u ,dx, nx):
     u = np.reshape(u, nx)
@@ -35,6 +35,7 @@ def ks(t, u ,dx, nx):
     uxx = SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
     uxxxx = SpectralDerivative(d=4, axis=0)._differentiate(u, dx)
     return np.reshape(-uxx-uxxxx-u*ux, nx)
+    # return np.reshape(-uxx-uxxxx-0.5*ux*ux)
 
 def kdv(t, u, dx, nx):
     u = np.reshape(u, nx)
@@ -43,9 +44,6 @@ def kdv(t, u, dx, nx):
     ux = SpectralDerivative(d=1, axis=0)._differentiate(u, dx)
     uxxx = SpectralDerivative(d=3, axis=0)._differentiate(u, dx)
     return np.reshape(6*u*ux-uxxx, nx)
-
-ic = np.zeros(100,)
-ic[20:30] = 1
 
 pde_setup = {
     "diffuse1D": {
@@ -68,11 +66,11 @@ pde_setup = {
             "dimension": 1
         },
         "input_features": ["u"],
-        "initial_condition": 10*np.arange(0,10,0.1) + 0.5,
+        "initial_condition": 10*np.exp(-(np.arange(0, 10, 0.1)-5)**2/2),
         "spatial_args": [0.1, 100],
         "time_args": [0.1, 10],
         "coeff_true": [
-            {"u_11": 1, "uu_1": 1}
+            {"u_11": 1, "u*u_1": 1}
         ],
         "spatial_grid": np.arange(0, 10, 0.1)
     },
@@ -82,11 +80,11 @@ pde_setup = {
             "dimension": 1
         },
         "input_features": ["u"],
-        "initial_condition": (1+np.sin(np.arange(0, 10, 0.1))),
+        "initial_condition": 10*np.exp(-(np.arange(0, 10, 0.1)-5)**2/2),
         "spatial_args": [0.1, 100],
         "time_args": [0.1, 10],
         "coeff_true": [
-            {"u_11": -1, "u_1111": -1, "uu_1": -1}, # "u_1*u_1": -0.5
+            {"u_11": -1, "u_1111": -1, "u*u_1": -1}, # "u_1*u_1": -0.5
         ],
         "spatial_grid": np.arange(0, 10, 0.1)
     },
@@ -96,11 +94,11 @@ pde_setup = {
             "dimension": 1
         },
         "input_features": ["u"],
-        "initial_condition": np.arange(0,10,0.1)*np.exp(-np.arange(0,10,0.1)**2),
+        "initial_condition": 10*np.exp(-(np.arange(0, 10, 0.1)-5)**2/2),
         "spatial_args": [0.1, 100],
         "time_args": [0.1, 10],
         "coeff_true": [
-            {"uu_1": 6, "u_111": -1},
+            {"u*u_1": 6, "u_111": -1},
         ],
         "spatial_grid": np.arange(0, 10, 0.1)
     },
