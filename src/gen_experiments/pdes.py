@@ -27,27 +27,10 @@ metric_ordering = {
 }
 
 
-def diffuse1D_dirichlet(t, u, dx, nx):
-    u = np.reshape(u, nx)
-    u[0] = 0
-    u[-1] = 0
-    uxx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
-    return np.reshape(uxx, nx)
-
-
 def diffuse1D_periodic(t, u, dx, nx):
     u = np.reshape(u, nx)
     uxx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
     return np.reshape(uxx, nx)
-
-
-def burgers1D_dirichlet(t, u, dx, nx):
-    u = np.reshape(u, nx)
-    u[0] = 0
-    u[-1] = 0
-    uxx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
-    ux = ps.differentiation.SpectralDerivative(d=1, axis=0)._differentiate(u, dx)
-    return np.reshape((uxx - u * ux), nx)
 
 
 def burgers1D_periodic(t, u, dx, nx):
@@ -55,16 +38,6 @@ def burgers1D_periodic(t, u, dx, nx):
     uxx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
     ux = ps.differentiation.SpectralDerivative(d=1, axis=0)._differentiate(u, dx)
     return np.reshape((0.1 * uxx - u * ux), nx)
-
-
-def ks_dirichlet(t, u, dx, nx):
-    u = np.reshape(u, nx)
-    u[0] = 0
-    u[-1] = 0
-    ux = ps.differentiation.SpectralDerivative(d=1, axis=0)._differentiate(u, dx)
-    uxx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
-    uxxxx = ps.differentiation.SpectralDerivative(d=4, axis=0)._differentiate(u, dx)
-    return np.reshape(-uxx - uxxxx - u * ux, nx)
 
 
 def ks_periodic(t, u, dx, nx):
@@ -88,9 +61,9 @@ pde_setup = {
     "diffuse1D_periodic": {
         "rhsfunc": {"func": diffuse1D_periodic, "dimension": 1},
         "input_features": ["u"],
-        "time_args": [0.1, 10],
+        "time_args": [0.1, 8],
         "coeff_true": [{"u_11": 1}],
-        "spatial_grid": np.linspace(-8, 8, 256),
+        "spatial_grid": np.linspace(-8, 8, 64),
     },
     "burgers1D_periodic": {
         "rhsfunc": {"func": burgers1D_periodic, "dimension": 1},
