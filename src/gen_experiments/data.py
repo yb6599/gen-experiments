@@ -252,6 +252,8 @@ def gen_pde_data(
             x_train_true,
             input_features,
             coeff_true,
+            t_end,
+            spatial_grid,
         ),
         "main": f"1 trajectories of {rhsfunc.__qualname__}",
         "metrics": {"rel_noise": rel_noise, "abs_noise": noise_abs},

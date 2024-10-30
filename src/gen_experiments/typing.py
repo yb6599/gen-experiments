@@ -20,6 +20,8 @@ class ProbData(NamedTuple):
     x_train_true: list[FloatND]
     input_features: list[str]
     coeff_true: list[dict[str, float]]
+    t_end: float
+    spatial_grid: np.ndarray
 
 
 class NestedDict(defaultdict):

@@ -119,6 +119,8 @@ def run(
         "x_test": x_test,
         "x_dot_test": x_dot_test,
         "model": model,
+        "t_end": data.t_end,
+        "spatial_grid": data.spatial_grid,
     }
     if display:
         plot_pde_panel(trial_data)
@@ -136,6 +138,8 @@ def plot_pde_panel(trial_data: FullSINDyTrialData):
         trial_data["x_train"],
         trial_data["x_true"],
         trial_data["smooth_train"],
+        trial_data["t_end"],
+        trial_data["spatial_grid"],
     )
     compare_coefficient_plots(
         trial_data["coeff_fit"],

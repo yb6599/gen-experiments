@@ -211,26 +211,34 @@ def plot_training_data(x_train: np.ndarray, x_true: np.ndarray, x_smooth: np.nda
     return fig
 
 
-def plot_pde_training_data(x_train, x_true, x_smooth):
+def plot_pde_training_data(x_train, x_true, x_smooth, t_end, spatial_grid):
     """Plot training data (and smoothed training data, if different)."""
     # 1D:
     if x_train.shape[-1] == 1:
+        t_min = 0
+        t_max = t_end
+        x_min = spatial_grid[0]
+        x_max = spatial_grid[-1]
         fig, axs = plt.subplots(1, 3, figsize=(18, 6))
-        im0 = axs[0].imshow(x_true, vmin=0, vmax=x_true.max())
+        im0 = axs[0].imshow(
+            x_true, vmin=0, vmax=x_true.max(), extent=[t_min, t_max, x_min, x_max]
+        )
         axs[0].set(title="True Data")
         fig.colorbar(im0, ax=axs[0])
-        im1 = axs[1].imshow(x_train, vmin=0, vmax=x_true.max())
+        im1 = axs[1].imshow(
+            x_train, vmin=0, vmax=x_true.max(), extent=[t_min, t_max, x_min, x_max]
+        )
         snr_noisy = 10 * np.log10(
             np.linalg.norm(x_true) ** 2 / np.linalg.norm(x_train - x_true) ** 2
         )
-        # snr_noisy = np.linalg.norm(x_train-x_true)
         axs[1].set(title=f"Noisy Data with Signal-to-Noise Ratio of {snr_noisy:.5f}")
         fig.colorbar(im1, ax=axs[1])
-        im2 = axs[2].imshow(x_smooth, vmin=0, vmax=x_smooth.max())
+        im2 = axs[2].imshow(
+            x_smooth, vmin=0, vmax=x_smooth.max(), extent=[t_min, t_max, x_min, x_max]
+        )
         snr_smooth = 10 * np.log10(
             np.linalg.norm(x_true) ** 2 / np.linalg.norm(x_smooth - x_true) ** 2
         )
-        # snr_smooth = np.linalg.norm(x_smooth-x_true)
         axs[2].set(
             title=f"Smoothed Data with Signal-to-Noise Ratio of {snr_smooth:.5f}"
         )
