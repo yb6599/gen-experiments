@@ -273,7 +273,7 @@ def _gen_pde_data(
         raise ValueError("Cannot specify both noise_abs and noise_rel")
     elif noise_abs is None and noise_rel is None:
         noise_abs = 0.1
-    rng = np.random.default_rng(seed)
+    rng = np.random.default_rng(int(seed))
     t_train = np.arange(0, t_end, dt)
     t_train_span = (t_train[0], t_train[-1])
     x_train = []
