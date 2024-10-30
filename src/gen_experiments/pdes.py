@@ -86,13 +86,6 @@ def kdv(t, u, dx, nx):
 
 
 pde_setup = {
-    "diffuse1D_dirichlet": {
-        "rhsfunc": {"func": diffuse1D_dirichlet, "dimension": 1},
-        "input_features": ["u"],
-        "time_args": [0.1, 10],
-        "coeff_true": [{"u_11": 1}],
-        "spatial_grid": np.arange(0, 10, 0.1),
-    },
     "diffuse1D_periodic": {
         "rhsfunc": {"func": diffuse1D_periodic, "dimension": 1},
         "input_features": ["u"],
@@ -100,28 +93,12 @@ pde_setup = {
         "coeff_true": [{"u_11": 1}],
         "spatial_grid": np.linspace(-8, 8, 256),
     },
-    "burgers1D_dirichlet": {
-        "rhsfunc": {"func": burgers1D_dirichlet, "dimension": 1},
-        "input_features": ["u"],
-        "time_args": [0.1, 10],
-        "coeff_true": [{"u_11": 1, "uu_1": 1}],
-        "spatial_grid": np.arange(0, 10, 0.1),
-    },
     "burgers1D_periodic": {
         "rhsfunc": {"func": burgers1D_periodic, "dimension": 1},
         "input_features": ["u"],
         "time_args": [0.1, 10],
         "coeff_true": [{"u_11": 0.1, "uu_1": -1}],
         "spatial_grid": np.linspace(-8, 8, 256),
-    },
-    "ks_dirichlet": {
-        "rhsfunc": {"func": ks_dirichlet, "dimension": 1},
-        "input_features": ["u"],
-        "time_args": [0.1, 10],
-        "coeff_true": [
-            {"u_11": -1, "u_1111": -1, "uu_1": -1},
-        ],
-        "spatial_grid": np.arange(0, 10, 0.1),
     },
     "ks_periodic": {
         "rhsfunc": {"func": ks_periodic, "dimension": 1},
