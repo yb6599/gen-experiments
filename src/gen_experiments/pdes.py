@@ -64,7 +64,7 @@ pde_setup = {
         "time_args": [0.1, 8],
         "coeff_true": [{"u_11": 1}],
         "spatial_grid": np.linspace(-8, 8, 64),
-        "init_cond": np.exp(-((np.linspace(-8, 8, 64) + 2) ** 2) / 2)
+        "init_cond": np.exp(-((np.linspace(-8, 8, 64) + 2) ** 2) / 2),
     },
     "burgers1D_periodic": {
         "rhsfunc": {"func": burgers1D_periodic, "dimension": 1},
