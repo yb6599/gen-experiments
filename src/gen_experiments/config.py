@@ -102,13 +102,8 @@ sim_params = {
     "med-noise": ND({"n_trajectories": 2, "noise_abs": 0.8}),
     "med-noise-many": ND({"n_trajectories": 10, "noise_abs": 0.8}),
     "hi-noise": ND({"n_trajectories": 2, "noise_abs": 2}),
-    "pde-ic1": ND({"init_cond": np.exp(-((np.linspace(-8, 8, 64) + 2) ** 2) / 2)}),
-    "pde-ic2": ND(
-        {
-            "init_cond": (np.cos(np.linspace(0, 100, 1024)))
-            * (1 + np.sin(np.linspace(0, 100, 1024) - 0.5))
-        }
-    ),
+    "pde-ic1": ND({}),
+    "pde-ic2": ND({}),
 }
 diff_params = {
     "test": ND({"diffcls": "FiniteDifference"}),
@@ -119,7 +114,7 @@ diff_params = {
     "savgol": ND({"diffcls": "sindy", "kind": "savitzky_golay"}),
     "sfd-nox": ND({"diffcls": "SmoothedFiniteDifference", "save_smooth": False}),
     "sfd-ps": ND({"diffcls": "SmoothedFiniteDifference"}),
-    "kalman": ND({"diffcls": "sindy", "kind": "kalman", "alpha": 0.000055, "axis":-2}),
+    "kalman": ND({"diffcls": "sindy", "kind": "kalman", "alpha": 0.000055, "axis": -2}),
     "kalman-empty2": ND({"diffcls": "sindy", "kind": "kalman", "alpha": None}),
     "kalman-auto": ND(
         {"diffcls": "sindy", "kind": "kalman", "alpha": None, "meas_var": 0.8}
@@ -130,14 +125,16 @@ feat_params = {
     "test2": ND({"featcls": "Fourier"}),
     "cubic": ND({"featcls": "Polynomial", "degree": 3}),
     "testweak": ND({"featcls": "WeakPDELibrary"}),  # needs work
-    "pde2": ND({
-        "featcls": "pde",
-        "function_library": ps.PolynomialLibrary(degree=1, include_bias=False),
-        "derivative_order": 2,
-        "spatial_grid": np.linspace(-8, 8, 64),
-        "include_interaction": True,
-        "differentiation_method": ps.differentiation.SmoothedFiniteDifference
-    }),
+    "pde2": ND(
+        {
+            "featcls": "pde",
+            "function_library": ps.PolynomialLibrary(degree=1, include_bias=False),
+            "derivative_order": 2,
+            "spatial_grid": np.linspace(-8, 8, 64),
+            "include_interaction": True,
+            "differentiation_method": ps.differentiation.SmoothedFiniteDifference,
+        }
+    ),
     "pde4": ND(
         {
             "featcls": "pde",
@@ -317,7 +314,7 @@ grid_params = {
     "tv1": ["diff_params.alpha"],
     "lorenzk": ["sim_params.t_end", "sim_params.noise_abs", "diff_params.alpha"],
     "duration-absnoise": ["sim_params.t_end", "sim_params.noise_abs"],
-    "rel_noise": ["sim_params.t_end", "sim_params.noise_rel"],
+    "rel_noise": ["sim_params.t_end", "sim_params.rel_noise"],
 }
 grid_vals: dict[str, list[Iterable]] = {
     "test": [[5, 10, 15, 20]],

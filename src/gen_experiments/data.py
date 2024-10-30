@@ -188,8 +188,8 @@ def _gen_data(
 
 def gen_pde_data(
     group: str,
-    init_cond: np.ndarray,
-    seed: int | None = None,
+    seed: int,
+    t_end: float | None = None,
     noise_abs: float | None = None,
     rel_noise: float | None = None,
 ) -> dict[str, Any]:
@@ -221,6 +221,7 @@ def gen_pde_data(
         (spatial_grid[-1] - spatial_grid[0]) / len(spatial_grid),
         len(spatial_grid),
     ]
+    init_cond = pde_setup[group]["init_cond"]
     time_args = pde_setup[group]["time_args"]
     dimension = pde_setup[group]["rhsfunc"]["dimension"]
     coeff_true = pde_setup[group]["coeff_true"]
@@ -228,6 +229,8 @@ def gen_pde_data(
         time_args = pde_setup[group]["time_args"]
     except KeyError:
         time_args = [0.01, 10]
+    if t_end is not None:
+        time_args[1] = t_end
     dt, t_train, x_train, x_test, x_dot_test, x_train_true = _gen_pde_data(
         rhsfunc,
         init_cond,

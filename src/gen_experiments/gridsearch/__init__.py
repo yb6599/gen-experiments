@@ -199,6 +199,7 @@ def run(
         other_params["group"] = base_group
     for s_counter, series_data in enumerate(series_params.series_list):
         curr_other_params = copy(other_params)
+        group = curr_other_params.pop("group")
         if series_params.param_name is not None:
             curr_other_params[series_params.param_name] = series_data.static_param
         new_grid_vals: list = grid_vals + series_data.grid_vals
@@ -225,7 +226,7 @@ def run(
             for axis_ind, key, val_list in zip(ind, new_grid_params, new_grid_vals):
                 curr_other_params[key] = val_list[axis_ind]
             sim_params = curr_other_params.pop("sim_params", {})
-            data = data_step(seed=seed, **sim_params)
+            data = data_step(group=group, seed=seed, **sim_params)["data"]
             curr_results, grid_data = base_ex.run(
                 data, **curr_other_params, display=False, return_all=True
             )
