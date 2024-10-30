@@ -184,6 +184,7 @@ def run(
         simulate = None
     elif base_ex.__name__ == "NoExperiment":
         data_step = gen_experiments.NoExperiment.gen_data
+        base_group = "none"
     if series_params is None:
         series_params = SeriesList(None, None, [SeriesDef(group, {}, [], [])])
         legends = False

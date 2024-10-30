@@ -37,7 +37,7 @@ class NoExperiment:
 
     @staticmethod
     def gen_data(*args: Any, **kwargs: Any) -> dict[str, Any]:
-        return {}
+        return {"data": {}}
 
     @staticmethod
     def run(
