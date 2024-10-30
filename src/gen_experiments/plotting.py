@@ -232,6 +232,14 @@ def plot_pde_training_data(x_train, x_true, x_smooth):
         plt.tight_layout()
         plt.show()
         plt.figure(figsize=(10, 6))
+        fft_values = np.abs(scipy.fft.rfft(x_train - x_true, axis=-2)) / np.sqrt(
+            x_train.shape[-2]
+        )
+        plt.loglog(fft_values.mean(axis=0))
+        plt.title("Measurement Noise Spectrum")
+        plt.xlabel("Wavenumber")
+        plt.ylabel("Magnitude")
+        plt.show()
 
 
 def plot_test_sim_data_1d_panel(
