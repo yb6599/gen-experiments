@@ -188,7 +188,7 @@ def _gen_data(
 
 def gen_pde_data(
     group: str,
-    seed: int,
+    seed: int | None = None,
     t_end: float | None = None,
     noise_abs: float | None = None,
     rel_noise: float | None = None,
