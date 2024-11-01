@@ -89,5 +89,6 @@ experiments: dict[str, tuple[Any, str | None]] = {
     "burgers1D_periodic": (pdes, "burgers1D_periodic"),
     "ks_dirichlet": (pdes, "ks_dirichlet"),
     "ks_periodic": (pdes, "ks_periodic"),
+    "kdv_periodic": (pdes, "kdv_periodic"),
     "none": (NoExperiment, None),
 }

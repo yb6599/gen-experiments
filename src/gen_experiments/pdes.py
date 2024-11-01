@@ -48,10 +48,8 @@ def ks_periodic(t, u, dx, nx):
     return np.reshape(-uxx - uxxxx - u * ux, nx)
 
 
-def kdv(t, u, dx, nx):
+def kdv_periodic(t, u, dx, nx):
     u = np.reshape(u, nx)
-    u[0] = 0
-    u[-1] = 0
     ux = ps.differentiation.SpectralDerivative(d=1, axis=0)._differentiate(u, dx)
     uxxx = ps.differentiation.SpectralDerivative(d=3, axis=0)._differentiate(u, dx)
     return np.reshape(6 * u * ux - uxxx, nx)
@@ -71,7 +69,8 @@ pde_setup = {
         "input_features": ["u"],
         "time_args": [0.1, 10],
         "coeff_true": [{"u_11": 0.1, "uu_1": -1}],
-        "spatial_grid": np.linspace(-8, 8, 256),
+        "spatial_grid": np.linspace(-8, 8, 64),
+        "init_cond": np.exp(-((np.linspace(-8, 8, 64) + 2) ** 2) / 2),
     },
     "ks_periodic": {
         "rhsfunc": {"func": ks_periodic, "dimension": 1},
@@ -80,7 +79,18 @@ pde_setup = {
         "coeff_true": [
             {"u_11": -1, "u_1111": -1, "uu_1": -1},
         ],
-        "spatial_grid": np.linspace(0, 100, 1024),
+        "spatial_grid": np.linspace(0, 100, 512),
+        "init_cond": (np.cos(np.linspace(0, 100, 512))) * (
+            1 + np.sin(np.linspace(0, 100, 512) - 0.5)
+        ),
+    },
+    "kdv_periodic": {
+        "rhsfunc": {"func": kdv_periodic, "dimension": 1},
+        "input_features": ["u"],
+        "time_args": [0.1, 8],
+        "coeff_true": [{"uu_1": 6, "u_111": -1}],
+        "spatial_grid": np.linspace(0, 60, 64),
+        "init_cond": 0.5 * (1 / np.cosh(np.linspace(0, 60, 64)))**2,
     },
 }
 

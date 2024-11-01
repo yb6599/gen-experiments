@@ -135,20 +135,31 @@ feat_params = {
             "differentiation_method": ps.differentiation.SmoothedFiniteDifference,
         }
     ),
+    "pde3": ND(
+        {
+        "featcls": "pde",
+        "function_library": ps.PolynomialLibrary(degree=1, include_bias=False),
+        "derivative_order": 3,
+        "spatial_grid": np.linspace(0, 60, 64),
+        "include_interaction": True,
+        "differentiation_method": ps.differentiation.SmoothedFiniteDifference
+        }
+    ),
     "pde4": ND(
         {
             "featcls": "pde",
-            "function_library": ps.PolynomialLibrary(degree=2, include_bias=False),
+            "function_library": ps.PolynomialLibrary(degree=1, include_bias=False),
             "derivative_order": 4,
-            "spatial_grid": np.linspace(0, 100, 1024),
+            "spatial_grid": np.linspace(0, 100, 512),
             "include_interaction": True,
+            "differentiation_method": ps.differentiation.SmoothedFiniteDifference,
         }
     ),
 }
 opt_params = {
     "test": ND({"optcls": "STLSQ"}),
     "test_low": ND({"optcls": "STLSQ", "threshold": 0.09}),
-    "miosr": ND({"optcls": "MIOSR", "target_sparsity": 1, "normalize_columns": True}),
+    "miosr": ND({"optcls": "MIOSR", "target_sparsity": 2, "normalize_columns": True}),
     "enslsq": ND(
         {"optcls": "ensemble", "opt": ps.STLSQ(), "bagging": True, "n_models": 20}
     ),
