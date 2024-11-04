@@ -224,6 +224,7 @@ def gen_pde_data(
     init_cond = pde_setup[group]["init_cond"]
     time_args = pde_setup[group]["time_args"]
     dimension = pde_setup[group]["rhsfunc"]["dimension"]
+    field = pde_setup[group]["rhsfunc"]["field"]
     coeff_true = pde_setup[group]["coeff_true"]
     try:
         time_args = pde_setup[group]["time_args"]
@@ -236,6 +237,7 @@ def gen_pde_data(
         init_cond,
         spatial_args,
         dimension,
+        field,
         seed,
         noise_abs=noise_abs,
         noise_rel=rel_noise,
@@ -265,6 +267,7 @@ def _gen_pde_data(
     init_cond: np.ndarray,
     spatial_args: Sequence,
     dimension: int,
+    field: int,
     seed: int | None,
     noise_abs: float | None,
     noise_rel: float | None,
@@ -279,54 +282,54 @@ def _gen_pde_data(
     rng = np.random.default_rng(seed)
     t_train = np.arange(0, t_end, dt)
     t_train_span = (t_train[0], t_train[-1])
-    x_train = []
-    x_train.append(
-        scipy.integrate.solve_ivp(
-            rhs_func,
-            t_train_span,
-            init_cond,
-            t_eval=t_train,
-            args=spatial_args,
-            **INTEGRATOR_KEYWORDS,
-        ).y.T
-    )
-    t, x = x_train[0].shape
-    x_train = np.stack(x_train, axis=-1)
-    if dimension == 1:
-        pass
-    elif dimension == 2:
-        x_train = np.reshape(x_train, (t, int(np.sqrt(x)), int(np.sqrt(x)), 1))
-    elif dimension == 3:
-        x_train = np.reshape(
-            x_train, (t, int(np.cbrt(x)), int(np.cbrt(x)), int(np.cbrt(x)), 1)
-        )
-    x_test = x_train
-    signal = x_test
-    x_test = np.moveaxis(x_test, -1, 0)
-    x_dot_test = np.array(
+    x_train = np.array(
         [
-            [rhs_func(0, xij, spatial_args[0], spatial_args[1]) for xij in xi]
-            for xi in x_test
+            scipy.integrate.solve_ivp(
+                rhs_func,
+                t_train_span,
+                init_cond,
+                t_eval=t_train,
+                args=spatial_args,
+                **INTEGRATOR_KEYWORDS,
+            ).y.T
         ]
     )
-    if dimension == 1:
-        x_dot_test = np.moveaxis(x_dot_test, [0, 1], [-1, -2])
-        pass
-    elif dimension == 2:
-        x_dot_test = np.reshape(x_dot_test, (t, int(np.sqrt(x)), int(np.sqrt(x)), 1))
-        x_dot_test = np.moveaxis(x_dot_test, 0, -2)
-    elif dimension == 3:
-        x_dot_test = np.reshape(
-            x_dot_test, (t, int(np.cbrt(x)), int(np.cbrt(x)), int(np.cbrt(x)), 1)
+    d, t, x = x_train.shape
+    x_train = x_train.swapaxes(0, 2)
+    x_test = x_train
+    if dimension == 1 and field == 1:
+        x_test = np.moveaxis(x_test, [-2, -1], [1, 0])
+        x_dot_test = np.array(
+            [
+                [rhs_func(0, xij, spatial_args[0], spatial_args[1]) for xij in xi]
+                for xi in x_test
+            ]
         )
-        x_dot_test = np.moveaxis(x_dot_test, 0, -2)
+        x_test = x_test.reshape(x_train.shape)
+        x_dot_test = x_dot_test.reshape(x_test.shape)
+    elif dimension == 1 and field != 1:
+        n = spatial_args[1]
+        x_train_reshaped = x_train.reshape(field, n, x_train.shape[1])
+        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(n, x_train.shape[1], field)
+        x_test = x_test.reshape(x_train.shape)
+        x_dot_test = np.zeros_like(x_test)
+    elif dimension == 2:
+        n = spatial_args[1]
+        x_train_reshaped = x_train.reshape(field, n**2, x_train.shape[1])
+        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(n, n, x_train.shape[1], field)
+        x_test = x_test.reshape(x_train.shape)
+        x_dot_test = np.zeros_like(x_test)
+    elif dimension == 3:
+        n = spatial_args[1]
+        x_train_reshaped = x_train.reshape(field, n**3, x_train.shape[1])
+        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(n, n, n, x_train.shape[1], field)
+        x_test = x_test.reshape(x_train.shape)
+        x_dot_test = np.zeros_like(x_test)
+    signal = x_test
     x_train_true = np.copy(x_train)
     if noise_rel is not None:
         noise_abs = np.sqrt(_max_amplitude(signal, axis=-2) * noise_rel)
     x_train = x_train + cast(float, noise_abs) * rng.standard_normal(x_train.shape)
-    x_train = np.moveaxis(x_train, 0, -2)
-    x_train_true = np.moveaxis(x_train_true, 0, -2)
-    x_test = np.moveaxis(x_test, [0, 1], [-1, -2])
     return dt, t_train, x_train, x_test, x_dot_test, x_train_true
 
 
