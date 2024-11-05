@@ -213,8 +213,7 @@ def plot_training_data(x_train: np.ndarray, x_true: np.ndarray, x_smooth: np.nda
 
 def plot_pde_training_data(x_train, x_true, x_smooth, t_end, spatial_grid):
     """Plot training data (and smoothed training data, if different)."""
-    # 1D:
-    if x_train.shape[-1] == 1:
+    if x_train.shape[-1] == 1 and len(x_train.shape) == 3:
         t_min = 0
         t_max = t_end
         x_min = spatial_grid[0]
@@ -254,6 +253,18 @@ def plot_pde_training_data(x_train, x_true, x_smooth, t_end, spatial_grid):
         plt.xlabel("Wavenumber")
         plt.ylabel("Magnitude")
         plt.show()
+    if x_train.shape[-1] == 1 and len(x_train.shape) == 4:
+        plt.figure(figsize=(10, 6))
+        fft_values = np.abs(scipy.fft.rfft(x_train - x_true, axis=-2)) / np.sqrt(
+            x_train.shape[-2]
+        )
+        plt.loglog(fft_values.mean(axis=(0, 1)))
+        plt.title("Measurement Noise Spectrum")
+        plt.xlabel("Wavenumber")
+        plt.ylabel("Magnitude")
+        plt.show()
+    if x_train.shape[-1] == 2:
+        pass
 
 
 def plot_test_sim_data_1d_panel(

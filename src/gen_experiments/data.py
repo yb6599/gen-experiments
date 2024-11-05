@@ -310,19 +310,25 @@ def _gen_pde_data(
     elif dimension == 1 and field != 1:
         n = spatial_args[1]
         x_train_reshaped = x_train.reshape(field, n, x_train.shape[1])
-        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(n, x_train.shape[1], field)
+        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(
+            n, x_train.shape[1], field
+        )
         x_test = x_test.reshape(x_train.shape)
         x_dot_test = np.zeros_like(x_test)
     elif dimension == 2:
         n = spatial_args[1]
         x_train_reshaped = x_train.reshape(field, n**2, x_train.shape[1])
-        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(n, n, x_train.shape[1], field)
+        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(
+            n, n, x_train.shape[1], field
+        )
         x_test = x_test.reshape(x_train.shape)
         x_dot_test = np.zeros_like(x_test)
     elif dimension == 3:
         n = spatial_args[1]
         x_train_reshaped = x_train.reshape(field, n**3, x_train.shape[1])
-        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(n, n, n, x_train.shape[1], field)
+        x_train = x_train_reshaped.transpose(1, 2, 0).reshape(
+            n, n, n, x_train.shape[1], field
+        )
         x_test = x_test.reshape(x_train.shape)
         x_dot_test = np.zeros_like(x_test)
     signal = x_test

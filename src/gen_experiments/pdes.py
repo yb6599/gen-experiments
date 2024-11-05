@@ -30,7 +30,7 @@ metric_ordering = {
 def diffuse1D_periodic(t, u, dx, nx):
     u = np.reshape(u, nx)
     uxx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
-    return np.reshape(uxx, nx)
+    return np.reshape(0.1 * uxx, nx)
 
 
 def burgers1D_periodic(t, u, dx, nx):
@@ -55,9 +55,41 @@ def kdv_periodic(t, u, dx, nx):
     return np.reshape(6 * u * ux - uxxx, nx)
 
 
+def gray_scott_model(t, U, dx, nx):
+    u = np.reshape(U[:nx], (nx,))
+    v = np.reshape(U[nx:], (nx,))
+    u_xx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(u, dx)
+    v_xx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(v, dx)
+    u_t = 0.01 * u_xx - u * v**2 + 0.04 * (1 - u)
+    v_t = 0.005 * v_xx + u * v**2 - 0.1 * v
+    return np.concatenate((u_t, v_t))
+
+
+def reaction_diffusion2D(t, U, dx, nx):
+    u = np.reshape(U[: nx * nx], (nx, nx))
+    v = np.reshape(U[nx * nx :], (nx, nx))
+    u_xx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(
+        u, dx
+    ) + ps.differentiation.SpectralDerivative(d=2, axis=1)._differentiate(u, dx)
+    v_xx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(
+        v, dx
+    ) + ps.differentiation.SpectralDerivative(d=2, axis=1)._differentiate(v, dx)
+    u_t = 0.2 * u_xx + u - u**3 - u * v**2 + u**2 + v**3
+    v_t = 0.2 * v_xx - u**3 - u * v**2 + v - u**2 * v - v**3
+    return np.concatenate((u_t.flatten(), v_t.flatten()))
+
+
+def diffuse2D_periodic(t, u, dx, nx):
+    u = np.reshape(u, (nx, nx))
+    u_xx = ps.differentiation.SpectralDerivative(d=2, axis=0)._differentiate(
+        u, dx
+    ) + ps.differentiation.SpectralDerivative(d=2, axis=1)._differentiate(u, dx)
+    return np.reshape(u_xx, (nx * nx,))
+
+
 pde_setup = {
     "diffuse1D_periodic": {
-        "rhsfunc": {"func": diffuse1D_periodic, "dimension": 1},
+        "rhsfunc": {"func": diffuse1D_periodic, "dimension": 1, "field": 1},
         "input_features": ["u"],
         "time_args": [0.1, 8],
         "coeff_true": [{"u_11": 1}],
@@ -65,7 +97,7 @@ pde_setup = {
         "init_cond": np.exp(-((np.linspace(-8, 8, 64) + 2) ** 2) / 2),
     },
     "burgers1D_periodic": {
-        "rhsfunc": {"func": burgers1D_periodic, "dimension": 1},
+        "rhsfunc": {"func": burgers1D_periodic, "dimension": 1, "field": 1},
         "input_features": ["u"],
         "time_args": [0.1, 10],
         "coeff_true": [{"u_11": 0.1, "uu_1": -1}],
@@ -73,24 +105,128 @@ pde_setup = {
         "init_cond": np.exp(-((np.linspace(-8, 8, 64) + 2) ** 2) / 2),
     },
     "ks_periodic": {
-        "rhsfunc": {"func": ks_periodic, "dimension": 1},
+        "rhsfunc": {"func": ks_periodic, "dimension": 1, "field": 1},
         "input_features": ["u"],
         "time_args": [0.4, 100],
         "coeff_true": [
             {"u_11": -1, "u_1111": -1, "uu_1": -1},
         ],
         "spatial_grid": np.linspace(0, 100, 512),
-        "init_cond": (np.cos(np.linspace(0, 100, 512))) * (
-            1 + np.sin(np.linspace(0, 100, 512) - 0.5)
-        ),
+        "init_cond": (np.cos(np.linspace(0, 100, 512)))
+        * (1 + np.sin(np.linspace(0, 100, 512) - 0.5)),
     },
     "kdv_periodic": {
-        "rhsfunc": {"func": kdv_periodic, "dimension": 1},
+        "rhsfunc": {"func": kdv_periodic, "dimension": 1, "field": 1},
         "input_features": ["u"],
         "time_args": [0.1, 8],
         "coeff_true": [{"uu_1": 6, "u_111": -1}],
         "spatial_grid": np.linspace(0, 60, 64),
-        "init_cond": 0.5 * (1 / np.cosh(np.linspace(0, 60, 64)))**2,
+        "init_cond": 0.5 * (1 / np.cosh(np.linspace(0, 60, 64))) ** 2,
+    },
+    "gray_scott_model": {
+        "rhsfunc": {"func": gray_scott_model, "dimension": 1, "field": 2},
+        "input_features": ["u", "v"],
+        "time_args": [0.1, 8],
+        "coeff_true": [
+            {"u_11": 0.01, "u v^2": -1, "u": -0.04, "1": 0.04},
+            {"v_11": 0.005, "u v^2": 1, "v": -0.1},
+        ],
+        "spatial_grid": np.linspace(-8, 8, 40),
+        "init_cond": np.concatenate(
+            [
+                np.zeros((40,))
+                + np.sum(
+                    [
+                        np.exp(-((np.linspace(-8, 8, 40) - x) ** 2) / 5)
+                        for x in [-6, -3, 4, 7, -7]
+                    ],
+                ),
+                np.zeros((40,))
+                + np.sum(
+                    [
+                        np.exp(-((np.linspace(-8, 8, 40) - x) ** 2) / 5)
+                        for x in [-4, 5, -3, -7, 6]
+                    ],
+                ),
+            ]
+        ),
+    },
+    "reaction_diffusion2D": {
+        "rhsfunc": {"func": reaction_diffusion2D, "dimension": 2, "field": 2},
+        "input_features": ["u", "v"],
+        "time_args": [0.1, 10],
+        "coeff_true": [
+            {
+                "u_11": 0.2,
+                "u_22": 0.2,
+                "u": 1,
+                "u^3": -1,
+                "u v^2": -1,
+                "u^2": 1,
+                "v^3": 1,
+            },
+            {
+                "v_11": 0.2,
+                "v_22": 0.2,
+                "u^3": -1,
+                "u v^2": -1,
+                "v": 1,
+                "u^2 v": -1,
+                "v^3": -1,
+            },
+        ],
+        "spatial_grid": np.linspace(-8, 8, 40),
+        "init_cond": np.concatenate(
+            [
+                np.zeros((40, 40)).flatten()
+                + np.sum(
+                    [
+                        np.exp(
+                            -(
+                                (np.linspace(-8, 8, 40).reshape(-1, 1) - x) ** 2
+                                + (np.linspace(-8, 8, 40).reshape(1, -1) - y) ** 2
+                            )
+                            / 5
+                        )
+                        for x, y in [(-6, -4), (-3, 5), (4, -3), (7, -7), (-7, 6)]
+                    ],
+                    axis=0,
+                ).flatten(),
+                np.zeros((40, 40)).flatten()
+                + np.sum(
+                    [
+                        np.exp(
+                            -(
+                                (np.linspace(-8, 8, 40).reshape(-1, 1) - x) ** 2
+                                + (np.linspace(-8, 8, 40).reshape(1, -1) - y) ** 2
+                            )
+                            / 5
+                        )
+                        for x, y in [(-6, -4), (-3, 5), (4, -3), (7, -7), (-7, 6)]
+                    ],
+                    axis=0,
+                ).flatten(),
+            ]
+        ),
+    },
+    "diffuse2D_periodic": {
+        "rhsfunc": {"func": diffuse2D_periodic, "dimension": 2, "field": 1},
+        "input_features": ["u"],
+        "time_args": [
+            0.1,
+            10,
+        ],
+        "coeff_true": [{"u_11": 1, "u_22": 1}],
+        "spatial_grid": np.linspace(-8, 8, 64),
+        "init_cond": np.exp(
+            -(
+                (
+                    np.linspace(-8, 8, 64).reshape(-1, 1) ** 2
+                    + np.linspace(-8, 8, 64).reshape(1, -1) ** 2
+                )
+                / 2
+            )
+        ).flatten(),
     },
 }
 

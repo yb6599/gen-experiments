@@ -137,12 +137,12 @@ feat_params = {
     ),
     "pde3": ND(
         {
-        "featcls": "pde",
-        "function_library": ps.PolynomialLibrary(degree=1, include_bias=False),
-        "derivative_order": 3,
-        "spatial_grid": np.linspace(0, 60, 64),
-        "include_interaction": True,
-        "differentiation_method": ps.differentiation.SmoothedFiniteDifference
+            "featcls": "pde",
+            "function_library": ps.PolynomialLibrary(degree=1, include_bias=False),
+            "derivative_order": 3,
+            "spatial_grid": np.linspace(0, 60, 64),
+            "include_interaction": True,
+            "differentiation_method": ps.differentiation.SmoothedFiniteDifference,
         }
     ),
     "pde4": ND(
