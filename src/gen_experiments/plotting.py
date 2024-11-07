@@ -213,57 +213,57 @@ def plot_training_data(x_train: np.ndarray, x_true: np.ndarray, x_smooth: np.nda
 
 def plot_pde_training_data(x_train, x_true, x_smooth, t_end, spatial_grid):
     """Plot training data (and smoothed training data, if different)."""
-    if x_train.shape[-1] == 1 and len(x_train.shape) == 3:
-        t_min = 0
-        t_max = t_end
-        x_min = spatial_grid[0]
-        x_max = spatial_grid[-1]
-        fig, axs = plt.subplots(1, 3, figsize=(18, 6))
-        im0 = axs[0].imshow(
-            x_true, vmin=0, vmax=x_true.max(), extent=[t_min, t_max, x_min, x_max]
-        )
-        axs[0].set(title="True Data")
-        fig.colorbar(im0, ax=axs[0])
-        im1 = axs[1].imshow(
-            x_train, vmin=0, vmax=x_true.max(), extent=[t_min, t_max, x_min, x_max]
-        )
-        snr_noisy = 10 * np.log10(
-            np.linalg.norm(x_true) ** 2 / np.linalg.norm(x_train - x_true) ** 2
-        )
-        axs[1].set(title=f"Noisy Data with Signal-to-Noise Ratio of {snr_noisy:.5f}")
-        fig.colorbar(im1, ax=axs[1])
-        im2 = axs[2].imshow(
-            x_smooth, vmin=0, vmax=x_smooth.max(), extent=[t_min, t_max, x_min, x_max]
-        )
-        snr_smooth = 10 * np.log10(
-            np.linalg.norm(x_true) ** 2 / np.linalg.norm(x_smooth - x_true) ** 2
-        )
-        axs[2].set(
-            title=f"Smoothed Data with Signal-to-Noise Ratio of {snr_smooth:.5f}"
-        )
-        fig.colorbar(im2, ax=axs[2])
-        plt.tight_layout()
-        plt.show()
-        plt.figure(figsize=(10, 6))
-        fft_values = np.abs(scipy.fft.rfft(x_train - x_true, axis=-2)) / np.sqrt(
-            x_train.shape[-2]
-        )
-        plt.loglog(fft_values.mean(axis=0))
-        plt.title("Measurement Noise Spectrum")
-        plt.xlabel("Wavenumber")
-        plt.ylabel("Magnitude")
-        plt.show()
-    if x_train.shape[-1] == 1 and len(x_train.shape) == 4:
-        plt.figure(figsize=(10, 6))
-        fft_values = np.abs(scipy.fft.rfft(x_train - x_true, axis=-2)) / np.sqrt(
-            x_train.shape[-2]
-        )
-        plt.loglog(fft_values.mean(axis=(0, 1)))
-        plt.title("Measurement Noise Spectrum")
-        plt.xlabel("Wavenumber")
-        plt.ylabel("Magnitude")
-        plt.show()
-    if x_train.shape[-1] == 2:
+    if x_train.shape[-1] == 1:
+        t_min, t_max = 0, t_end
+        x_min, x_max = spatial_grid[0], spatial_grid[-1]
+        if len(x_train.shape) == 3:
+            fig, axs = plt.subplots(1, 3, figsize=(18, 6))
+            im0 = axs[0].imshow(
+                x_true, vmin=0, vmax=x_true.max(), extent=[t_min, t_max, x_min, x_max]
+            )
+            axs[0].set(title="True Data")
+            fig.colorbar(im0, ax=axs[0])
+            im1 = axs[1].imshow(
+                x_train, vmin=0, vmax=x_true.max(), extent=[t_min, t_max, x_min, x_max]
+            )
+            snr_noisy = 10 * np.log10(
+                np.linalg.norm(x_true) ** 2 / np.linalg.norm(x_train - x_true) ** 2
+            )
+            axs[1].set(
+                title=f"Noisy Data with Signal-to-Noise Ratio of {snr_noisy:.5f}"
+            )
+            fig.colorbar(im1, ax=axs[1])
+            im2 = axs[2].imshow(
+                x_smooth,
+                vmin=0,
+                vmax=x_smooth.max(),
+                extent=[t_min, t_max, x_min, x_max],
+            )
+            mae_smooth = np.mean(np.abs(x_smooth - x_true))
+            axs[2].set(title=f"Smoothed Data with MAE of {mae_smooth:.5f}")
+            fig.colorbar(im2, ax=axs[2])
+            plt.tight_layout()
+            plt.show()
+            plt.figure(figsize=(10, 6))
+            fft_values = np.abs(scipy.fft.rfft(x_train - x_true, axis=-2)) / np.sqrt(
+                x_train.shape[-2]
+            )
+            plt.loglog(fft_values.mean(axis=0))
+            plt.title("Measurement Noise Spectrum")
+            plt.xlabel("Wavenumber")
+            plt.ylabel("Magnitude")
+            plt.show()
+        elif len(x_train.shape) == 4:
+            plt.figure(figsize=(10, 6))
+            fft_values = np.abs(scipy.fft.rfft(x_train - x_true, axis=-2)) / np.sqrt(
+                x_train.shape[-2]
+            )
+            plt.loglog(fft_values.mean(axis=(0, 1)))
+            plt.title("Measurement Noise Spectrum")
+            plt.xlabel("Wavenumber")
+            plt.ylabel("Magnitude")
+            plt.show()
+    elif x_train.shape[-1] == 2:
         pass
 
 
