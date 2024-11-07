@@ -292,16 +292,19 @@ def run(
             locator = GridLocator(
                 plot_prefs.plot_match.metrics, plot_prefs.plot_match.keep_axes, [params]
             )
-            plot_data += find_gridpoints(
+            gridpoints = find_gridpoints(
                 locator,
                 intermediate_data,
                 [results["series_data"][key]],
                 results["metrics"],
                 results["scan_grid"],
             )
+            for gridpoint in gridpoints:
+                plot_data.append({"key": key, **gridpoint})
             logger.info(f"Searching took {process_time() - start:.2f} sec")
         results["plot_data"] = plot_data
         for gridpoint in plot_data:
+            smoother_name = gridpoint["key"]
             grid_data = gridpoint["data"]
             logger.info(f"Plotting: {gridpoint['params']}")
             start = process_time()
@@ -309,6 +312,7 @@ def run(
                 grid_data |= simulate(
                     grid_data["model"], grid_data["dt"], grid_data["x_test"]
                 )
+            print(f'Gridpoint {gridpoint["pind"]} with {smoother_name} Smoother')
             plot_panel(grid_data)  # type: ignore
             logger.info(f"Sim/Plot took {process_time() - start:.2f} sec")
         if plot_prefs.rel_noise:
