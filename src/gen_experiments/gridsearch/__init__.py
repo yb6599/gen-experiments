@@ -364,8 +364,6 @@ def plot(
             ax = cast(Axes, subplots[m_ind_row, col])
             ax.plot(x_ticks, param_search[m_ind_row], label=name)
             x_ticks = np.array(x_ticks)
-            if param_name in ("sim_params.rel_noise"):
-                ax.set_xscale("log")
             if m_name in ("coeff_mse", "coeff_mae"):
                 ax.set_yscale("log")
             x_ticks_normalized = (x_ticks - x_ticks.min()) / (
@@ -377,7 +375,7 @@ def plot(
             ax = subplots[m_ind_row, col]
             if kstest(x_ticks_normalized, "uniform") < kstest(
                 x_ticks_lognormalized, "uniform"
-            ):
+            ) or param_name in ("sim_params.rel_noise"):
                 ax.set_xscale("log")
             if m_ind_row == 0:
                 ax.set_title(f"{param_name}")
