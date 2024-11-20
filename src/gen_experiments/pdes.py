@@ -111,9 +111,9 @@ pde_setup = {
         "coeff_true": [
             {"u_11": -1, "u_1111": -1, "uu_1": -1},
         ],
-        "spatial_grid": np.linspace(0, 100, 512),
-        "init_cond": (np.cos(np.linspace(0, 100, 512)))
-        * (1 + np.sin(np.linspace(0, 100, 512) - 0.5)),
+        "spatial_grid": np.linspace(0, 100, 128),
+        "init_cond": (np.cos(np.linspace(0, 100, 128)))
+        * (1 + np.sin(np.linspace(0, 100, 128) - 0.5)),
     },
     "kdv_periodic": {
         "rhsfunc": {"func": kdv_periodic, "dimension": 1, "field": 1},
