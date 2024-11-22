@@ -229,8 +229,9 @@ def plot_pde_training_data(x_train, x_true, x_smooth, t_end, spatial_grid):
             snr_noisy = 10 * np.log10(
                 np.linalg.norm(x_true) ** 2 / np.linalg.norm(x_train - x_true) ** 2
             )
+            mse_noisy = np.mean((x_train - x_true)**2)
             axs[1].set(
-                title=f"Noisy Data with Signal-to-Noise Ratio of {snr_noisy:.5f}"
+                title=f"Noisy Data with Signal-to-Noise Ratio of {snr_noisy:.5f} \n and MSE of {mse_noisy:.5f}"
             )
             fig.colorbar(im1, ax=axs[1])
             im2 = axs[2].imshow(
@@ -239,8 +240,8 @@ def plot_pde_training_data(x_train, x_true, x_smooth, t_end, spatial_grid):
                 vmax=x_smooth.max(),
                 extent=[t_min, t_max, x_min, x_max],
             )
-            mae_smooth = np.mean(np.abs(x_smooth - x_true))
-            axs[2].set(title=f"Smoothed Data with MAE of {mae_smooth:.5f}")
+            mse_smooth = np.mean((x_smooth - x_true)**2)
+            axs[2].set(title=f"Smoothed Data with MSE of {mse_smooth:.5f}")
             fig.colorbar(im2, ax=axs[2])
             plt.tight_layout()
             plt.show()
