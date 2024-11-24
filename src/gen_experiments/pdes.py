@@ -112,16 +112,15 @@ pde_setup = {
             {"u_11": -1, "u_1111": -1, "uu_1": -1},
         ],
         "spatial_grid": np.linspace(0, 100, 128),
-        "init_cond": (np.cos(np.linspace(0, 100, 128)))
-        * (1 + np.sin(np.linspace(0, 100, 128) - 0.5)),
+        "init_cond": (np.sin(2 * np.pi * np.linspace(0, 100, 128) / 20)) * (1 + 0.5 * np.sin(np.linspace(0, 100, 128) / 10)),
     },
     "kdv_periodic": {
         "rhsfunc": {"func": kdv_periodic, "dimension": 1, "field": 1},
         "input_features": ["u"],
         "time_args": [0.1, 8],
         "coeff_true": [{"uu_1": 6, "u_111": -1}],
-        "spatial_grid": np.linspace(0, 60, 64),
-        "init_cond": 0.5 * (1 / np.cosh(np.linspace(0, 60, 64))) ** 2,
+        "spatial_grid": np.linspace(0, 100, 64),
+        "init_cond": 0.5 * (1 / np.cosh(np.linspace(0, 100, 64))) ** 2,
     },
     "gray_scott_model": {
         "rhsfunc": {"func": gray_scott_model, "dimension": 1, "field": 2},
